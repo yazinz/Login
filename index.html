@@ -1,0 +1,427 @@
+<!DOCTYPE html><html>
+
+<head>
+    <meta charset="UTF-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" /><title>CAS - Central Authentication Service Connexion</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <link rel="stylesheet" type="text/css" href="normalize.css" /><link rel="stylesheet" type="text/css" href="bootstrap-grid.min.css" /><link rel="stylesheet" type="text/css" href="material-components-web.min.css" /><link rel="stylesheet" type="text/css" href="materialdesignicons.min.css" /><link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css" /><link rel="stylesheet" type="text/css" href="cas.css" /><link rel="shortcut icon"
+        href="favicon.ico" /></head>
+
+<body class="login mdc-typography">
+    <script type="text/javascript" src="jquery.min.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+
+<script type="text/javascript" src="es5-shim.min.js"></script>
+    <script type="text/javascript" src="css-vars-ponyfill.min.js"></script>
+    <script type="text/javascript" src="material-components-web.min.js"></script>
+<script type="text/javascript" src="cas.js"></script>
+<script type="text/javascript" src="material.js"></script>
+<script>
+    if (typeof resourceLoadedSuccessfully === "function") {
+        resourceLoadedSuccessfully();
+    }
+    $(() => {
+        typeof cssVars === "function" && cssVars({onlyLegacy: true});
+    })
+    var trackGeoLocation = false;
+</script>
+
+<div>
+
+    <header id="app-bar" class="mdc-top-app-bar mdc-top-app-bar--fixed mdc-elevation--z4 shadow-sm">
+        <nav class="mdc-top-app-bar__row navbar navbar-dark bg-dark">
+            <div class="container-fluid container-fluid d-flex align-items-center justify-content-between">
+                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                </section>
+                <section class="mdc-top-app-bar__section">
+                    <span class="cas-brand mx-auto">
+                        <span class="visually-hidden">CAS</span>
+                        <a href="/">
+                            <img id="cas-logo" class="cas-logo"
+                                 title="CAS"
+                                 src="cas-logo.png"
+                            /></a>
+                    </span>
+                </section>
+                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+                    <button id="cas-notifications-menu"
+                            class="mdc-icon-button mdc-top-app-bar__action-item cas-notification-toggle btn btn-outline-light"
+                            aria-label="Bookmark this page"
+                            data-bs-toggle="modal"
+                            data-bs-target="#cas-notification-dialog">
+                        <span class="mdi mdi-bell-alert fa fa-bell"></span>
+                        <span class="visually-hidden">notifications</span>
+                        <i id="notifications-count" class="notifications-count count">2</i>
+                    </button>
+
+                    </section>
+            </div>
+        </nav>
+    </header>
+
+    <div id="logindrawer">
+        <aside id="app-drawer"
+               class="mdc-drawer mdc-drawer--dismissible mdc-drawer--modal offcanvas offcanvas-start">
+            <div class="mdc-drawer__header offcanvas-header flex-column">
+                <h3 class="mdc-drawer__title offcanvas-title">CAS</h3>
+                <h6 class="mdc-drawer__subtitle offcanvas-title">Central Authentication Service</h6>
+            </div>
+            <div class="mdc-drawer__content offcanvas-body">
+                <nav class="mdc-list list-group list-group-flush">
+                    <a id="halbrowser"
+                       href="/cas5/webjars/hal-explorer/1.1.0/index.html#hkey0=Content-Type&amp;hval0=application/json&amp;uri=https://auth.univh2c.ma/cas5/actuator"
+                       class="mdc-list-item list-group-item list-group-item-action">
+                        <i class="mdi mdi-cogs fa fa-cogs"></i>&nbsp;
+                        <span class="mdc-list-item__text">HAL Explorer</span>
+                    </a>
+
+                    <a href="/cas5/actuator" class="mdc-list-item list-group-item list-group-item-action">
+                        <i class="mdi mdi-cogs fa fa-cogs"></i>&nbsp;
+                        <span class="mdc-list-item__text">Actuator Endpoints</span>
+                    </a>
+                    <hr class="mdc-list-divider bs-hide"/><a class="mdc-list-item list-group-item list-group-item-action" href="https://apereo.github.io/cas">
+                        <i class="mdi mdi-file-code-outline fas fa-file-code"></i>&nbsp;
+                        <span class="mdc-list-item__text">Documentation</span>
+                    </a>
+                    <a class="mdc-list-item list-group-item list-group-item-action" href="https://github.com/apereo/cas/pulls">
+                        <i class="mdi mdi-call-merge fas fa-code-branch"></i>&nbsp;
+                        <span class="mdc-list-item__text">Pull Requests</span>
+                    </a>
+                    <a class="mdc-list-item list-group-item list-group-item-action"
+                       href="https://apereo.github.io/cas/developer/Contributor-Guidelines.html">
+                        <i class="mdi mdi-information fas fa-info-circle"></i>&nbsp;
+                        <span class="mdc-list-item__text">Guide pour les contributeurs</span>
+                    </a>
+                    <a class="mdc-list-item list-group-item list-group-item-action" href="https://apereo.github.io/cas/Support.html">
+                        <i class="mdi mdi-help-circle fas fa-question-circle"></i>&nbsp;
+                        <span class="mdc-list-item__text">Support</span>
+                    </a>
+                    <a class="mdc-list-item list-group-item list-group-item-action" href="https://apereo.github.io/cas/Mailing-Lists.html">
+                        <i class="mdi mdi-email-newsletter fas fa-envelope-open-text"></i>&nbsp;
+                        <span class="mdc-list-item__text">Listes de diffusion</span>
+                    </a>
+                    <a class="mdc-list-item list-group-item list-group-item-action" href="https://gitter.im/apereo/cas">
+                        <i class="mdi mdi-message-text fas fa-comment-dots"></i>&nbsp;
+                        <span class="mdc-list-item__text">Salon de discussion</span>
+                    </a>
+                    <a class="mdc-list-item list-group-item list-group-item-action" href="https://apereo.github.io/">
+                        <i class="mdi mdi-post fas fa-newspaper"></i>&nbsp;
+                        <span class="mdc-list-item__text">Blog</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+    </div>
+
+    <script>var countMessages = 0;</script>
+    <div
+            class="mdc-dialog cas-notification-dialog modal"
+            id="cas-notification-dialog" role="alertdialog"
+            aria-modal="true" aria-labelledby="notif-dialog-title"
+            aria-describedby="notif-dialog-content">
+        <div class="mdc-dialog__container modal-dialog">
+            <div class="mdc-dialog__surface modal-content">
+                <h1 class="mdc-dialog__title mt-lg-2 modal-header modal-title" id="notif-dialog-title">
+                    Notifications
+                </h1>
+                <div class="mdc-dialog__content modal-body" id="notif-dialog-content">
+                    <div id="cookiesSupportedDiv" class="cas-notification-message mdc-typography--body1" style="display: none">
+                        <h6 class="mdc-typography--headline6 mdi mdi-alert-circle fas fa-exclamation-circle">Cookies navigateur désactivés</h6>
+                        <p class="text-wrap small">Votre navigateur ne supporte pas les cookies. L'authentification centralisée NE FONCTIONNERA PAS.</p>
+                    </div>
+
+                </div>
+                <footer class="mdc-dialog__actions modal-footer">
+                    <button type="button" class="mdc-button mdc-button--raised mdc-dialog__button btn btn-primary"
+                            data-mdc-dialog-action="accept"
+                            data-mdc-dialog-button-default
+                            data-bs-dismiss="modal">
+                        <span class="mdc-button__label">OK</span>
+                    </button>
+                </footer>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        (material => {
+            let header = {
+                init: () => {
+                    header.attachTopbar();
+                    material.autoInit();
+                },
+                attachDrawer: () => {
+                    let elm = document.getElementById('app-drawer');
+                    if (elm != null) {
+                        let drawer = material.drawer.MDCDrawer.attachTo(elm);
+                        let closeDrawer = evt => {
+                            drawer.open = false;
+                        };
+                        drawer.foundation.handleScrimClick = closeDrawer;
+                        document.onkeydown = evt => {
+                            evt = evt || window.event;
+                            if (evt.keyCode == 27) {
+                                closeDrawer();
+                            }
+                        };
+                        header.drawer = drawer;
+                        return drawer;
+                    }
+                    return undefined;
+                },
+                attachTopbar: drawer => {
+
+                    drawer = header.attachDrawer();
+                    let dialog = header.attachNotificationDialog();
+
+                    if (drawer != undefined) {
+                        header.attachDrawerToggle(drawer);
+                    }
+                    if (dialog != undefined) {
+                        header.attachNotificationToggle(dialog);
+                    }
+                },
+                checkCaps: ev => {
+                    let s = String.fromCharCode(ev.which);
+                    if (s.toUpperCase() === s && s.toLowerCase() !== s && !ev.shiftKey) {
+                        ev.target.parentElement.classList.add('caps-on');
+                    } else {
+                        ev.target.parentElement.classList.remove('caps-on');
+                    }
+                },
+                attachDrawerToggle: drawer => {
+                    let appBar = document.getElementById('app-bar');
+                    if (appBar != null) {
+                        let topAppBar = material.topAppBar.MDCTopAppBar.attachTo(appBar);
+                        topAppBar.setScrollTarget(document.getElementById('main-content'));
+                        topAppBar.listen('MDCTopAppBar:nav', () => {
+                            drawer.open = !drawer.open;
+                        });
+                        return topAppBar;
+                    }
+                    return undefined;
+                },
+                attachNotificationDialog: () => {
+                    let element = document.getElementById('cas-notification-dialog');
+                    if (element != null) {
+                        return material.dialog.MDCDialog.attachTo(element);
+                    }
+                    return undefined;
+                },
+                attachNotificationToggle: dialog => {
+                    let btn = document.getElementById('cas-notifications-menu');
+                    if (btn != null) {
+                        btn.addEventListener('click', () => {
+                            dialog.open();
+                        });
+                    }
+                }
+            }
+            function supportsCookies() {
+                try {
+                    document.cookie = 'testcookie=1';
+                    let ret = document.cookie.indexOf('testcookie=') !== -1;
+                    document.cookie = 'testcookie=1; expires=Thu, 01-Jan-1970 00:00:01 GMT';
+                    return ret;
+                } catch (e) {
+                    console.log(e);
+                    return false;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                if (material) {
+                    header.init();
+                }
+
+                if (!supportsCookies()) {
+                    countMessages++;
+                    window.jQuery('#cookiesSupportedDiv').show();
+                }
+
+                if (countMessages === 0) {
+                    window.jQuery('#notifications-count').remove();
+                    window.jQuery('#cas-notifications-menu').remove();
+                } else {
+                    window.jQuery('#notifications-count').text(`(${countMessages})`)
+                }
+            });
+        })(typeof mdc !== 'undefined' && mdc);
+    </script>
+</div>
+
+    <div class="mdc-drawer-scrim"></div>
+
+    <div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust d-flex justify-content-center">
+        <main role="main" id="main-content" class="container-lg py-4">
+            <div id="content" class="d-flex justify-content-center">
+   <div class="d-flex justify-content-center flex-md-row flex-column mdc-card mdc-card-content card flex-grow-1">
+        <section id="loginForm"
+                 class="login-section login-form card-body">
+            <div class="d-flex flex-column justify-content-between m-auto">
+
+        <div>
+            </div>
+
+        <div class="form-wrapper">
+
+            <form method="post" id="fm1" action="login">
+                <div id="login-form-controls">
+                    <h3 class="text-center">
+                        <i class="mdi mdi-security fas fa-shield-alt"></i>
+                        <span>Entrez votre identifiant et votre mot de passe.</span>
+                    </h3>
+
+                    <section class="cas-field form-group my-3" id="usernameSection">
+                        <label for="username"
+                               class="mdc-text-field mdc-text-field--outlined control-label w-100">
+                            <span class="mdc-notched-outline">
+                                <span class="mdc-notched-outline__leading"></span>
+                                <span class="mdc-notched-outline__notch">
+                                    <span class="mdc-floating-label"><span class="accesskey">I</span>dentifiant :</span>
+                                </span>
+                                <span class="mdc-notched-outline__trailing"></span>
+                            </span>
+                            <input class="mdc-text-field__input form-control" id="username"
+                                   size="25"
+                                   type="text"
+                                   accesskey="i"
+                                   autocapitalize="none"
+                                   spellcheck="false"
+                                   autocomplete="username" required name="username" value=""/></label>
+
+                        <div class="mdc-text-field-helper-line">
+                            <div class="mdc-text-field-helper-text mdc-text-field-helper-text--validation-msg" aria-hidden="true">
+                                <span id="usernameValidationMessage">Vous devez entrer votre identifiant.</span>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                            /*<![CDATA[*/
+                            var username = "";
+                            var disabled = false;
+
+                            if (username != null && username !== '') {
+                                $('#username').val(username);
+                                if (disabled) {
+                                    $('#usernameSection').hide();
+                                }
+                            }
+                            /*]]>*/
+                        </script>
+                    </section>
+                    <section class="cas-field form-group my-3 mdc-input-group form-group" id="passwordSection">
+                        <div class="mdc-input-group-field mdc-input-group-field-append">
+                            <div class="caps-check">
+                                <label for="password"
+                                       class="mdc-text-field caps-check mdc-text-field--outlined control-label mdc-text-field--with-trailing-icon control-label w-100">
+                                    <span class="mdc-notched-outline">
+                                        <span class="mdc-notched-outline__leading"></span>
+                                        <span class="mdc-notched-outline__notch">
+                                            <span class="mdc-floating-label"><span class="accesskey">M</span>ot de passe :</span>
+                                        </span>
+                                        <span class="mdc-notched-outline__trailing"></span>
+                                    </span>
+                                    <input class="mdc-text-field__input form-control pwd"
+                                           type="password"
+                                           id="password"
+                                           size="25"
+                                           required
+                                           accesskey="m"
+                                           autocomplete="off" name="password" value=""/><button
+                                            class="reveal-password align-self-end mdc-button mdc-button--unelevated mdc-input-group-append mdc-icon-button btn btn-primary"
+                                            tabindex="-1" type="button">
+                                        <i class="mdi mdi-eye reveal-password-icon fas fa-eye"></i>
+                                        <span class="visually-hidden">Toggle Password</span>
+                                    </button>
+                                </label>
+                                <div class="mdc-text-field-helper-line">
+                                    <div
+                                            class="mdc-text-field-helper-text mdc-text-field-helper-text--validation-msg"
+                                            aria-hidden="true">
+                                        <span id="passwordValidationMessage">Vous devez entrer votre mot de passe.</span>
+                                    </div>
+                                </div>
+                                <div class="mdc-text-field-helper-line caps-warn">
+                                    <div
+                                            class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg text-danger">
+                                        <span>La touche Verr Maj est activée !</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="cas-field form-group my-3">
+                        </section>
+
+
+                    <section class="cas-field">
+
+                        <input type="hidden" name="execution" value="59958735-4d75-4d91-a96f-ad390d715b73_ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0lzSW10cFpDSTZJbVl4T0dFd1l6bGtMV014TVRFdE5ETTRaUzFpTldZeExUa3pNVFF6WTJRMk4yUTBNaUo5LnlvRndZSUR6OU5zNHRSN1llNDhKbENvbTFucTJMb2pZdFJ1V3JFOWx3TDlKSlhvZ0g5Q1ZrMmRrNjV4YVB2aHBMV0dJU196MUtKbE81SWRqZUdDR0MzeXNFczNJNndoV3l1d21EMnk1QVdVQ1l1Y2RfMUZzb2NUaDc4TEVTNzdqbzk3TTYwclkxcGR5UGFHTGJMUlJaUWsyNmNMODMyNlk1aEVQTmJLTW5VZFdCWVROdC0xWlhUT0R2TWt6cTBId2p4UmNrOU9HTFI5Z0luUDFKT0tvUUdaMEY1YjY3b3gtRXRXdUlMNXRBa3ZKTHNfWTNJZldsQkNiZGQ3Smt2bVRmRlRMLUlKbDF5bWJCZUw2X1NCTzhwOXR0LTRLNVVvRW9PMUZTcFk2UDA4cWdoQjVyUERzQ3Z1cFc1M2VZM08wcm5mdk5qR0otM0FJNVE1S3BUcmdrRU5IVjFzYmZfbjBpOW53ejFPRGhyN0p3aHcwSEdGYnA3clNOdDNiSTNnNFB6bWlTSnNjRkNlZzZOQWs3d2tDa1Z3aHc3U1lZc1NGSDVTb01FaVVIVm1mNDAzMHNxM0lsUHRVWEZXZko0VUtnaVcxVXAwR1o3MmhrcmlscWxya29fam8yUEhxc3ZRZHJSY1JXMFZLRC1nNm1SMlJfQ0RfdExZWFJybDlmZDNGTzVHbS1wNXo3Ukp0bXlCaHhpTW5lZFpyRWJzWkE5ZnZRRmZBS2hIYW1wbWdQQnJzYnV6NzJkNklZVDJZUmdtUHByc3daV0hKdVRHT092RVd0MVh3R0xhbGZKT19BR29NVkJOVFFWLUJfUWlHakxtTmhmYS1xVUE1bGxJYUFXRGIyZk56cmp2UVZhNDU0NXFCODcyQUI1STVVWDh1UnNRdHJCUDN2aVRMLTRTOWgtbWVRR3VZUmlKTTJFMl9XSGhFM004bFo0Z20xbnVzREJ3Ym55Wndfb2RUQ0ptOW82M2p0NHVGYXV4WHlQTk5FUW9EaUdQMVp6TEREaTNQOHUzZ2FFUElPUzFNbkdLT1hPSEh2cGNKc0wxb3ZyUk5uZzZNQjgwWlFjZDF6c1o1ZVVjOGRBdS1DVlY4dDNCM2JfYlVkcXI5ajFnSDlLNk9SVnk5Zkl2UFprSU9yRVZZelZqR080S0Q4aU0xaGRWQzYtTHpXR21fX3VvNnNkOFg0dFFPN2ZRRGZaYkRBWEc3YW95NnJvTWNrV3lZeS1rV252dXJuT3VER1hCUTFxeU1HQkg5UjdMWk1jX2JwYUZ1VVIydlVZU1BpdEZPc3VyVmh3RHRkUDZtLUQwX3VYYnhFTk9PT0ZTVldXeVhTRXdYZDhvaFZiZ2dyWkRGaGk2TmJXdm9YWjJoSUJESXJmWWJZSG44X3oyM3BZd1RMYkZaU181elNINE1Yem9TeXozalhzOGllSVQ5MzhCZlZfbm1qS0VWRVVoNHNaczBxNEdjdnNWUmpqUG51NE9PNkNjLkJFQjRKSWNwTVE2SDNxMFRBbms4bTZSNkp1QnViSGY2NnNUOVdRWjM4c0hhZUlsSlIxM0pzUHBCSVVCSFRtVzB4T0J4Qk1obkVTVE1sSmNjMzh0OWJn"/><input type="hidden" name="_eventId" value="submit"/><input type="hidden" name="geolocation"/></section>
+
+                    <button
+                class="mdc-button mdc-button--raised btn btn-primary btn-primary"
+                name="submitBtn"
+                accesskey="l"
+                type="submit">
+            <span class="mdc-button__label">SE CONNECTER</span>
+        </button>
+
+        </div>
+            </form>
+
+            <hr class="my-4"/><span>
+                <div id="pmlinks" class="my-2">
+        <div>
+            <br /><span class="mdi mdi-account-question"></span>
+            <span><a href="login.html">Mot de passe oublié ?</a></span>
+        </div>
+    </div>
+                </span>
+
+            <script type="text/javascript">
+                /*<![CDATA[*/
+                var i = "Veuillez patienter..."
+                var j = "SE CONNECTER"
+                    /*]]>*/
+                    $(window).on('pageshow', function () {
+                        $(':submit').prop('disabled', false);
+                        $(':submit').attr('value', j);
+                    });
+                $(document).ready(function () {
+                    $("#fm1").submit(function () {
+                        $(":submit").attr("disabled", true);
+                        $(":submit").attr("value", i);
+                        return true;
+                    });
+                });
+            </script>
+        </div>
+
+        <span>
+            <div id="sidebar">
+            <div class="sidebar-content">
+                <p>Pour des raisons de sécurité, veuillez vous <a href="logout">déconnecter</a> et fermer votre navigateur lorsque vous avez fini d'accéder aux services authentifiés.</p>
+            </div>
+        </div>
+        </span>
+    </div>
+        </section>
+        <span>
+            </span>
+        </div>
+</div>
+        </main>
+    </div>
+
+    <footer class="py-3 d-flex justify-content-center align-items-center cas-footer">
+    <span id="copyright" class="me-2 d-inline-block">Copyright &copy; 2005&ndash;2021 Apereo, Inc.</span>
+    <span class="px-3 d-inline-block">Powered by <a href="https://github.com/apereo/cas">Apereo CAS</a></span>
+    <code class="version">6.6.15 29/12/2023 10:23</code>
+</footer>
+    
+</body>
+
+</html>
